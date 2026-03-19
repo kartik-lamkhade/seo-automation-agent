@@ -1,0 +1,271 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0125e1fb-0e16-4109-803d-b4472fe593dd",
+              "name": "keyword",
+              "value": "AI tools for students Pune",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        0
+      ],
+      "id": "f29c166e-23c1-4cca-b971-f6e27ce73dd3",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "https://serpapi.com/search.json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "=={{$json.keyword}}"
+            },
+            {
+              "name": "api_key",
+              "value": "f939f15a2adc0b8823a0d8f7e60b8d2b920f23f22a112510cbcc90e137a07236"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        288,
+        0
+      ],
+      "id": "b43f3085-7376-45e7-9948-744dd0c9c3e0",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        0
+      ],
+      "id": "ee8325de-e6fc-4bec-91db-f2a79db39c85",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items[0].json.organic_results.slice(0,1).map(result => {\n  return {\n    json: {\n      link: result.link,\n      title: result.title\n    }\n  }\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        0
+      ],
+      "id": "1986c708-73bf-4889-92e4-a9e0194b5ec4",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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 "
+            },
+            {
+              "name": "Content-Type",
+              "value": "Content-Type"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai/gpt-3.5-turbo\",\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"Generate SEO blog.\\n\\nKeyword: {{$json.keyword}}\\nTitle: {{$json.title}}\\n\\nInclude:\\n- SEO Title\\n- Meta Description\\n- H1, H2, H3\\n- 800 words\\n- FAQ section\\n- Local SEO Pune\\n- Content gaps vs competitors\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        704,
+        0
+      ],
+      "id": "f622c9e0-7f97-4d07-b52b-8c31c0c17700",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1f580106-92ab-4a90-ae50-371c11d29035",
+              "name": "content",
+              "value": "=\n\n{{$json.choices[0].message.content}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        0
+      ],
+      "id": "cf4b28e5-1022-44d2-9cf5-bd0ea67eb375",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1avWsJEAIVtdP2xgdE3742vMdVTZV3dylKP3r_KReFwE",
+          "mode": "list",
+          "cachedResultName": "customer",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1avWsJEAIVtdP2xgdE3742vMdVTZV3dylKP3r_KReFwE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1avWsJEAIVtdP2xgdE3742vMdVTZV3dylKP3r_KReFwE/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "content": "={{ $json.content }}"
+          },
+          "matchingColumns": [
+            "content"
+          ],
+          "schema": [
+            {
+              "id": "content",
+              "displayName": "content",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1104,
+        0
+      ],
+      "id": "cbdedac1-af4e-49fd-b39a-9e49d838f534",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "nUrVYq7cXgW8ofmV",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "91fa61c3-2d34-4814-8148-f64c7f1943ec",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e71a4e779633649fa1462e8a05f6d18e3c4eed1aa76b9c6e8db0b501d57107ac"
+  },
+  "id": "kK2dCJUW8j9dRGcX",
+  "tags": []
+}
